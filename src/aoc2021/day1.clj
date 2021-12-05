@@ -2001,10 +2001,6 @@
              10406
              10415])
 
+(defn increasing [x, y] (if (< x y) 1 0))
 
-(defn increasing-depths [count depths]
-  (if (< (nth depths 0) (nth depths 1))
-    (+ 1 count)
-    count))
-
-(reduce increasing-depths 0 (partition 2 1 depths))
+(apply + (map increasing depths (rest depths)))
