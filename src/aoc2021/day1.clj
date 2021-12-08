@@ -2001,6 +2001,14 @@
              10406
              10415])
 
+;; part 1
 (defn increasing [x, y] (if (< x y) 1 0))
 
 (apply + (map increasing depths (rest depths)))
+;; end part 1
+
+;; part 2
+(def measurements (map (fn [p] (apply + p)) (partition 3 1 depths)))
+
+(apply + (map increasing measurements (rest measurements)))
+;; end part 2
