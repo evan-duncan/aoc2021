@@ -22,24 +22,26 @@
 (def close-char-map (zipmap close open))
 (def open-char-map (zipmap open close))
 
-(defn corrupted-chars [corrupted stack chars]
+(defn corrupted-chars [chars & {:keys [corrupted stack]
+                                :or {corrupted '(), stack '()}}]
   (if (empty? chars)
     [corrupted stack]
-    (let [ch (first chars)]
+    (let [ch (first chars) ch-tail (rest chars)]
       (if (contains? open ch) ;; push open char to stack
-        (corrupted-chars corrupted (cons ch stack) (rest chars))
-        (if (= (first stack) (close-char-map ch))
-          (corrupted-chars corrupted (rest stack) (rest chars)) ;; remove head of stack
-          (corrupted-chars (cons ch corrupted) (rest stack) (rest chars))))))) ;; add closing char to corrupted stack and remove head from stack
+        (corrupted-chars ch-tail :corrupted corrupted :stack (cons ch stack))
+        (let [stack-char (first stack) stack-tail (rest stack)]
+          (if (= stack-char (close-char-map ch))
+            (corrupted-chars ch-tail :corrupted corrupted :stack stack-tail)
+            (corrupted-chars ch-tail :corrupted (cons ch corrupted) :stack stack-tail)))))))
 
 ;; part 1
-(->> (map #(first (corrupted-chars '() '() (s/split % #""))) lines)
+(->> (map #(first (corrupted-chars (s/split % #""))) lines)
      (map #(corrupted-chars-points-table (first %)))
      (remove nil?)
      (apply +))
 
 ;; part 2
-(let [coll (->> (map #(corrupted-chars '() '() (s/split %1 #"")) lines)
+(let [coll (->> (map #(corrupted-chars (s/split %1 #"")) lines)
                 (map #(when (empty? (first %)) (last %)))
                 (remove nil?)
                 (map #(replace open-char-map %))
