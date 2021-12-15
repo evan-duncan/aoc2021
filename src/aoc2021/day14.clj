@@ -1,6 +1,7 @@
 (ns aoc2021.day14
   (:require [clojure.string :as str]
-            [clojure.set :refer [map-invert]]))
+            [clojure.set :refer [map-invert]]
+            [criterium.core]))
 
 (def input
   (filterv
@@ -8,6 +9,7 @@
    (str/split-lines (slurp "/Users/evan.duncan/Work/src/github.com/evan-duncan/aoc2021/src/aoc2021/day14.txt"))))
 
 (defn polymer-template-from [s] (first s))
+
 (defn pair-insertion-rules [s]
   (let [re #"\s+->\s+"
         rules (rest s)]
@@ -21,7 +23,7 @@
      (map (fn [x y] (hash-map [x y] count)) parts (rest parts)))))
 
 (defn merge-seq [seq]
-  (apply merge-with + seq))
+  (apply merge-with +' seq))
 
 (defn expand
   "Turn {[N N] 1} => ({[N C] 1} {[C N] 1})"
@@ -60,3 +62,4 @@
 
 (solve 10)
 (solve 40)
+(criterium.core/bench (solve 40))
